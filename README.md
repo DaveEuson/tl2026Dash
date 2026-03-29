@@ -64,4 +64,4 @@ This project is built as a native **qibb** application. The backend utilizes **q
 
 ## 🔗 Live Demo URL
 
-[View the Interactive Dashboard Preview here](https://DaveEuson.github.io/tl2026Dash/)
+[View the Interactive Dashboard Preview of qibb dashboard here](https://DaveEuson.github.io/tl2026Dash/)
