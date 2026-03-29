@@ -12,8 +12,9 @@
   <style>
     :root {
       --color-bg: #16161e; --color-card: #1f2335; --color-border: #292e42;
-      --color-accent: #7aa2f7; --color-green: #9ece6a; --color-red: #f7768e;
-      --color-text: #c0caf5; --color-text-bright: #ffffff;
+      --color-accent: #7aa2f7; --color-accent-alt: #bb9af7; --color-green: #9ece6a; 
+      --color-red: #f7768e; --color-orange: #ff9e64; --color-yellow: #e0af68;
+      --color-text: #c0caf5; --color-text-bright: #ffffff; --color-text-muted: #565f89;
     }
     body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; overflow-x: hidden; }
     .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
@@ -24,23 +25,29 @@
     .chart-box { height: 420px; display: flex; flex-direction: column; }
     .chart-container { flex: 1; position: relative; width: 100%; height: 320px; }
 
-    .job-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    .job-table th, .job-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--color-border); }
+    .job-card { padding: 0; overflow: hidden; margin-bottom: 20px; }
+    .job-header { background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--color-border); padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .job-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .job-table th { padding: 12px 24px; color: var(--color-text-muted); text-transform: uppercase; font-size: 11px; border-bottom: 1px solid var(--color-border); }
+    .job-table td { padding: 14px 24px; border-bottom: 1px solid rgba(41, 46, 66, 0.5); }
+    .prominence-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    
     .demo-banner { background: var(--color-accent); color: var(--color-bg); padding: 10px; text-align: center; font-weight: bold; }
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+    .iconik-link { color: var(--color-accent-alt); text-decoration: none; font-weight: 600; }
+    .iconik-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="demo-banner">OFFLINE DEMO MODE - MULTI-CLIP DATA PREVIEW</div>
+  <div class="demo-banner">OFFLINE DEMO MODE - MULTI-BRAND CLUSTERING PREVIEW</div>
   
   <div class="dashboard-container">
     <h1>🌙 BRAND EXPOSURE TRACKER</h1>
     
     <div class="glass-card">
         <div style="display:flex; justify-content: space-around; text-align:center; flex-wrap: wrap; gap: 20px;">
-            <div><div>Total Media Value</div><div class="stat-value" style="color:var(--color-green)">$842,500</div></div>
-            <div><div>Core Brands</div><div class="stat-value">12</div></div>
-            <div><div>Total Screen Time</div><div class="stat-value">14m 22s</div></div>
+            <div><div>Total Media Value</div><div class="stat-value" style="color:var(--color-green)">$1,245,600</div></div>
+            <div><div>Core Brands</div><div class="stat-value">14</div></div>
+            <div><div>Total Screen Time</div><div class="stat-value">22m 14s</div></div>
             <div><div>Jobs Analyzed</div><div class="stat-value">7</div></div>
         </div>
     </div>
@@ -48,113 +55,93 @@
     <div class="charts-area">
         <div class="glass-card chart-box">
             <h3 style="margin: 0 0 10px 0">Value by Core Brand</h3>
-            <div class="chart-container">
-                <canvas id="barChart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="barChart"></canvas></div>
         </div>
         <div class="glass-card chart-box">
             <h3 style="margin: 0 0 10px 0">Exposure Prominence</h3>
-            <div class="chart-container">
-                <canvas id="pieChart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="pieChart"></canvas></div>
         </div>
     </div>
 
-    <div class="glass-card">
-        <h3>Analysis Log (Last 7 Jobs)</h3>
-        <div style="overflow-x: auto;">
-            <table class="job-table">
-                <thead>
-                    <tr>
-                        <th>Clip Name</th>
-                        <th>Top Brand Detected</th>
-                        <th>Prominence</th>
-                        <th>Duration</th>
-                        <th>Est. Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>NASCAR Richmond Highlights</td><td>Toyota</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 12s</td><td>$72,000</td></tr>
-                    <tr><td>Premier League Goal Comp</td><td>Hublot</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>45s</td><td>$45,000</td></tr>
-                    <tr><td>NBA Three-Pointer Highlights</td><td>GEICO</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 06s</td><td>$66,000</td></tr>
-                    <tr><td>F1 Pit Stop Analysis</td><td>Oracle</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>52s</td><td>$52,000</td></tr>
-                    <tr><td>Street League Skate Final</td><td>Monster Energy</td><td><span class="badge" style="background:#e0af6822; color:#e0af68">Moderate</span></td><td>1m 30s</td><td>$45,000</td></tr>
-                    <tr><td>Champions League Intro</td><td>Adidas</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>38s</td><td>$38,000</td></tr>
-                    <tr><td>Wimbledon Final Set</td><td>Rolex</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>2m 15s</td><td>$135,000</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <div id="jobsList"></div>
   </div>
 
   <script>
     Chart.register(ChartDataLabels);
 
-    const commonOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false
-    };
+    // MOCK DATA: Multiple brands per clip
+    const mockJobs = [
+      {
+        name: "NASCAR Richmond Extended Highlights",
+        total: "$152,000",
+        detections: [
+          { brand: "Toyota", context: "Hood & Side Panels", prominence: "DOMINANT", tc: "00:00:30", dur: "1m 12s", val: "$72,000", color: "#f7768e", emoji: "🔴" },
+          { brand: "Sunoco", context: "Pit Wall & Fueling", prominence: "PROMINENT", tc: "00:01:15", dur: "45s", val: "$45,000", color: "#ff9e64", emoji: "🟠" },
+          { brand: "Goodyear", context: "Tire Branding", prominence: "MODERATE", tc: "00:00:45", dur: "1m 10s", val: "$35,000", color: "#e0af68", emoji: "🟡" }
+        ]
+      },
+      {
+        name: "NBA: Kyle Corbett's 200th Three-Pointer",
+        total: "$105,600",
+        detections: [
+          { brand: "GEICO", context: "Courtside LED", prominence: "DOMINANT", tc: "00:00:10", dur: "1m 06s", val: "$66,000", color: "#f7768e", emoji: "🔴" },
+          { brand: "Nike", context: "Jersey Patch", prominence: "MODERATE", tc: "00:00:15", dur: "1m 06s", val: "$33,000", color: "#e0af68", emoji: "🟡" },
+          { brand: "NBA Logo", context: "Broadcast Bug", prominence: "SUBTLE", tc: "00:00:00", dur: "1m 06s", val: "$6,600", color: "#565f89", emoji: "⚪" }
+        ]
+      }
+    ];
 
-    // BAR CHART
+    // RENDER JOBS
+    const list = document.getElementById('jobsList');
+    mockJobs.forEach(job => {
+      let rows = job.detections.map(d => `
+        <tr>
+          <td style="color:var(--color-accent); font-weight:700;">${d.brand}</td>
+          <td>${d.context}</td>
+          <td><span class="prominence-badge" style="background:${d.color}22; color:${d.color}">${d.emoji} ${d.prominence}</span></td>
+          <td style="font-family:monospace; color:var(--color-text-muted);">${d.tc}</td>
+          <td style="color:var(--color-text-muted);">${d.dur}</td>
+          <td style="color:var(--color-green); font-weight:600;">${d.val}</td>
+          <td><a href="#" class="iconik-link">Iconik ↗</a></td>
+        </tr>
+      `).join('');
+
+      list.innerHTML += `
+        <div class="glass-card job-card">
+          <div class="job-header">
+            <div style="display:flex; align-items:center; gap:16px;">
+              <div style="background:#bb9af722; color:var(--color-accent-alt); padding:8px; border-radius:8px; font-size:20px;">🎬</div>
+              <h3 style="margin:0;">${job.name}</h3>
+            </div>
+            <div style="font-size:24px; font-weight:800; color:var(--color-green);">${job.total}</div>
+          </div>
+          <table class="job-table">
+            <thead><tr><th>Brand</th><th>Context</th><th>Prominence</th><th>Start TC</th><th>Duration</th><th>Value</th><th>Link</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    });
+
+    // CHARTS
     new Chart(document.getElementById('barChart'), {
         type: 'bar', 
         data: { 
-            labels: ['Rolex', 'Toyota', 'GEICO', 'Oracle', 'Hublot', 'Monster', 'Adidas'], 
-            datasets: [{ 
-                data: [135000, 72000, 66000, 52000, 45000, 45000, 38000], 
-                backgroundColor: '#7aa2f7',
-                borderRadius: 6
-            }]
+            labels: ['Rolex', 'Toyota', 'GEICO', 'Oracle', 'Hublot', 'Adidas'], 
+            datasets: [{ data: [135000, 72000, 66000, 52000, 45000, 38000], backgroundColor: '#7aa2f7', borderRadius: 6 }]
         },
         options: { 
-            ...commonOptions,
-            plugins: { 
-                datalabels: { 
-                    anchor: 'end', 
-                    align: 'top', 
-                    offset: 4,
-                    color: '#9ece6a', 
-                    font: { weight: 'bold', size: 12 },
-                    textAlign: 'center',
-                    formatter: (v) => '$' + v.toLocaleString() 
-                }, 
-                legend: { display: false } 
-            },
-            layout: { padding: { top: 30 } }, // Space for labels at the top
-            scales: {
-                x: { 
-                    ticks: { color: '#ffffff', font: { weight: 'bold' } },
-                    grid: { display: false },
-                    border: { display: false }
-                },
-                y: { 
-                    display: false,
-                    grid: { display: false }
-                }
-            }
+            responsive: true, maintainAspectRatio: false,
+            plugins: { datalabels: { anchor: 'end', align: 'top', color: '#9ece6a', font: { weight: 'bold' }, formatter: (v) => '$' + v.toLocaleString() }, legend: { display: false } },
+            layout: { padding: { top: 30 } },
+            scales: { x: { ticks: { color: '#ffffff', font: { weight: 'bold' } }, grid: { display: false }, border: { display: false } }, y: { display: false } }
         }
     });
 
-    // PIE CHART
     new Chart(document.getElementById('pieChart'), {
         type: 'doughnut',
-        data: { 
-            labels: ['DOMINANT', 'PROMINENT', 'MODERATE', 'SUBTLE'], 
-            datasets: [{ 
-                data: [45, 30, 15, 10], 
-                backgroundColor: ['#f7768e', '#ff9e64', '#e0af68', '#565f89'],
-                borderWidth: 0
-            }]
-        },
-        options: { 
-            ...commonOptions,
-            cutout: '70%',
-            plugins: { 
-                datalabels: { display: false },
-                legend: { position: 'bottom', labels: { color: '#c0caf5', usePointStyle: true, font: { size: 11 } } } 
-            }
-        }
+        data: { labels: ['DOMINANT', 'PROMINENT', 'MODERATE', 'SUBTLE'], datasets: [{ data: [45, 30, 15, 10], backgroundColor: ['#f7768e', '#ff9e64', '#e0af68', '#565f89'], borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { datalabels: { display: false }, legend: { position: 'bottom', labels: { color: '#c0caf5', usePointStyle: true, font: { size: 11 } } } } }
     });
   </script>
 </body>
