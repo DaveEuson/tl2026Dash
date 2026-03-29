@@ -1,135 +1,126 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2865
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DEMO | Qibb Brand Exposure Tracker</title>
+  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-  <meta charset="utf-8" />\
-  <meta name="viewport" content="width=device-width, initial-scale=1" />\
-  <title>DEMO | Qibb Brand Exposure Tracker</title>\
-  \
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">\
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>\
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>\
-\
-  <style>\
-    :root \{\
-      --color-bg: #16161e; --color-card: #1f2335; --color-border: #292e42;\
-      --color-accent: #7aa2f7; --color-green: #9ece6a; --color-red: #f7768e;\
-      --color-text: #c0caf5; --color-text-bright: #ffffff;\
-    \}\
-    body \{ margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; \}\
-    .dashboard-container \{ max-width: 1400px; margin: 0 auto; padding: 20px; \}\
-    .glass-card \{ background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; \}\
-    .stat-value \{ font-size: 32px; font-weight: 800; color: var(--color-text-bright); \}\
-    .charts-area \{ display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; height: 350px; margin-bottom: 30px;\}\
-    .job-table \{ width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; \}\
-    .job-table th, .job-table td \{ padding: 10px; text-align: left; border-bottom: 1px solid var(--color-border); \}\
-    .demo-banner \{ background: var(--color-accent); color: var(--color-bg); padding: 10px; text-align: center; font-weight: bold; \}\
-    .badge \{ padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; \}\
-  </style>\
-</head>\
-<body>\
-  <div class="demo-banner">OFFLINE DEMO MODE - MULTI-CLIP DATA PREVIEW</div>\
-  \
-  <div class="dashboard-container">\
-    <h1>\uc0\u55356 \u57113  BRAND EXPOSURE TRACKER</h1>\
-    \
-    <div class="glass-card">\
-        <div style="display:flex; justify-content: space-around; text-align:center;">\
-            <div><div>Total Media Value</div><div class="stat-value" style="color:var(--color-green)">$842,500</div></div>\
-            <div><div>Core Brands</div><div class="stat-value">12</div></div>\
-            <div><div>Total Screen Time</div><div class="stat-value">14m 22s</div></div>\
-            <div><div>Jobs Analyzed</div><div class="stat-value">7</div></div>\
-        </div>\
-    </div>\
-\
-    <div class="charts-area">\
-        <div class="glass-card" style="display:flex; flex-direction:column;">\
-            <h3 style="margin-top:0">Value by Core Brand</h3>\
-            <canvas id="barChart"></canvas>\
-        </div>\
-        <div class="glass-card" style="display:flex; flex-direction:column;">\
-            <h3 style="margin-top:0">Exposure Prominence</h3>\
-            <canvas id="pieChart"></canvas>\
-        </div>\
-    </div>\
-\
-    <div class="glass-card">\
-        <h3>Analysis Log (Last 7 Jobs)</h3>\
-        <table class="job-table">\
-            <thead>\
-                <tr>\
-                    <th>Clip Name</th>\
-                    <th>Top Brand Detected</th>\
-                    <th>Prominence</th>\
-                    <th>Duration</th>\
-                    <th>Est. Value</th>\
-                </tr>\
-            </thead>\
-            <tbody>\
-                <tr><td>NASCAR Richmond Highlights</td><td>Toyota</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 12s</td><td>$72,000</td></tr>\
-                <tr><td>Premier League Goal Comp</td><td>Hublot</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>45s</td><td>$45,000</td></tr>\
-                <tr><td>NBA Three-Pointer Highlights</td><td>GEICO</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 06s</td><td>$66,000</td></tr>\
-                <tr><td>F1 Pit Stop Analysis</td><td>Oracle</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>52s</td><td>$52,000</td></tr>\
-                <tr><td>Street League Skate Final</td><td>Monster Energy</td><td><span class="badge" style="background:#e0af6822; color:#e0af68">Moderate</span></td><td>1m 30s</td><td>$45,000</td></tr>\
-                <tr><td>Champions League Intro</td><td>Adidas</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>38s</td><td>$38,000</td></tr>\
-                <tr><td>Wimbledon Final Set</td><td>Rolex</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>2m 15s</td><td>$135,000</td></tr>\
-            </tbody>\
-        </table>\
-    </div>\
-  </div>\
-\
-  <script>\
-    Chart.register(ChartDataLabels);\
-\
-    // BAR CHART: Top Brands by Value\
-    new Chart(document.getElementById('barChart'), \{\
-        type: 'bar', indexAxis: 'y',\
-        data: \{ \
-            labels: ['Rolex', 'Toyota', 'GEICO', 'Oracle', 'Hublot', 'Monster', 'Adidas'], \
-            datasets: [\{ \
-                data: [135000, 72000, 66000, 52000, 45000, 45000, 38000], \
-                backgroundColor: '#7aa2f7',\
-                borderRadius: 4\
-            \}]\
-        \},\
-        options: \{ \
-            maintainAspectRatio: false,\
-            plugins: \{ \
-                datalabels: \{ anchor:'end', align:'right', color: '#9ece6a', formatter: (v) => '$'+v.toLocaleString() \}, \
-                legend: \{display:false\} \
-            \},\
-            scales: \{\
-                x: \{ display: false \},\
-                y: \{ ticks: \{ color: '#ffffff', font: \{ weight: 'bold' \} \}, grid: \{ display: false \} \}\
-            \}\
-        \}\
-    \});\
-\
-    // PIE CHART: Prominence Mix\
-    new Chart(document.getElementById('pieChart'), \{\
-        type: 'doughnut',\
-        data: \{ \
-            labels: ['DOMINANT', 'PROMINENT', 'MODERATE', 'SUBTLE'], \
-            datasets: [\{ \
-                data: [45, 30, 15, 10], \
-                backgroundColor: ['#f7768e', '#ff9e64', '#e0af68', '#565f89'],\
-                borderWidth: 0\
-            \}]\
-        \},\
-        options: \{ \
-            maintainAspectRatio: false,\
-            cutout: '70%',\
-            plugins: \{ \
-                legend: \{ position: 'bottom', labels: \{ color: '#c0caf5', usePointStyle: true, font: \{size: 11\} \}\} \
-            \}\
-        \}\
-    \});\
-  </script>\
-</body>\
-</html>}
+  <style>
+    :root {
+      --color-bg: #16161e; --color-card: #1f2335; --color-border: #292e42;
+      --color-accent: #7aa2f7; --color-green: #9ece6a; --color-red: #f7768e;
+      --color-text: #c0caf5; --color-text-bright: #ffffff;
+    }
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; }
+    .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .glass-card { background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .stat-value { font-size: 32px; font-weight: 800; color: var(--color-text-bright); }
+    .charts-area { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; min-height: 350px; margin-bottom: 30px;}
+    .job-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    .job-table th, .job-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--color-border); }
+    .demo-banner { background: var(--color-accent); color: var(--color-bg); padding: 10px; text-align: center; font-weight: bold; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">OFFLINE DEMO MODE - MULTI-CLIP DATA PREVIEW</div>
+  
+  <div class="dashboard-container">
+    <h1>🌙 BRAND EXPOSURE TRACKER</h1>
+    
+    <div class="glass-card">
+        <div style="display:flex; justify-content: space-around; text-align:center;">
+            <div><div>Total Media Value</div><div class="stat-value" style="color:var(--color-green)">$842,500</div></div>
+            <div><div>Core Brands</div><div class="stat-value">12</div></div>
+            <div><div>Total Screen Time</div><div class="stat-value">14m 22s</div></div>
+            <div><div>Jobs Analyzed</div><div class="stat-value">7</div></div>
+        </div>
+    </div>
+
+    <div class="charts-area">
+        <div class="glass-card" style="display:flex; flex-direction:column;">
+            <h3 style="margin-top:0">Value by Core Brand</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+        <div class="glass-card" style="display:flex; flex-direction:column;">
+            <h3 style="margin-top:0">Exposure Prominence</h3>
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <h3>Analysis Log (Last 7 Jobs)</h3>
+        <table class="job-table">
+            <thead>
+                <tr>
+                    <th>Clip Name</th>
+                    <th>Top Brand Detected</th>
+                    <th>Prominence</th>
+                    <th>Duration</th>
+                    <th>Est. Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>NASCAR Richmond Highlights</td><td>Toyota</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 12s</td><td>$72,000</td></tr>
+                <tr><td>Premier League Goal Comp</td><td>Hublot</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>45s</td><td>$45,000</td></tr>
+                <tr><td>NBA Three-Pointer Highlights</td><td>GEICO</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 06s</td><td>$66,000</td></tr>
+                <tr><td>F1 Pit Stop Analysis</td><td>Oracle</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>52s</td><td>$52,000</td></tr>
+                <tr><td>Street League Skate Final</td><td>Monster Energy</td><td><span class="badge" style="background:#e0af6822; color:#e0af68">Moderate</span></td><td>1m 30s</td><td>$45,000</td></tr>
+                <tr><td>Champions League Intro</td><td>Adidas</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>38s</td><td>$38,000</td></tr>
+                <tr><td>Wimbledon Final Set</td><td>Rolex</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>2m 15s</td><td>$135,000</td></tr>
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+  <script>
+    Chart.register(ChartDataLabels);
+
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar', indexAxis: 'y',
+        data: { 
+            labels: ['Rolex', 'Toyota', 'GEICO', 'Oracle', 'Hublot', 'Monster', 'Adidas'], 
+            datasets: [{ 
+                data: [135000, 72000, 66000, 52000, 45000, 45000, 38000], 
+                backgroundColor: '#7aa2f7',
+                borderRadius: 4
+            }]
+        },
+        options: { 
+            maintainAspectRatio: false,
+            plugins: { 
+                datalabels: { anchor:'end', align:'right', color: '#9ece6a', formatter: (v) => '$'+v.toLocaleString() }, 
+                legend: {display:false} 
+            },
+            scales: {
+                x: { display: false },
+                y: { ticks: { color: '#ffffff', font: { weight: 'bold' } }, grid: { display: false } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('pieChart'), {
+        type: 'doughnut',
+        data: { 
+            labels: ['DOMINANT', 'PROMINENT', 'MODERATE', 'SUBTLE'], 
+            datasets: [{ 
+                data: [45, 30, 15, 10], 
+                backgroundColor: ['#f7768e', '#ff9e64', '#e0af68', '#565f89'],
+                borderWidth: 0
+            }]
+        },
+        options: { 
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: { 
+                legend: { position: 'bottom', labels: { color: '#c0caf5', usePointStyle: true, font: {size: 11} }} 
+            }
+        }
+    });
+  </script>
+</body>
+</html>
