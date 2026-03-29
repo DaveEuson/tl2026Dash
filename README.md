@@ -1,15 +1,18 @@
 # 🌙 AI-Powered Brand Valuation Engine
 
-**Tagline:** Real-time ROI tracking and media sponsorship auditing powered by **Twelve Labs** and **qibb**.
+**Tagline:** Determining Sports Sponsorship Media Value powered by **Twelve Labs** and **qibb**.
 
 ---
 
 ## 🚀 The Business Case
 
-Sponsorship auditing in sports and entertainment is traditionally a manual, post-event process. It lacks real-time visibility and often relies on "best guesses" for brand value. 
+Determining the media value of sponsorship is an inexact science and extremely labor-intensive. Sponsorship auditing in sports and entertainment is traditionally a manual, post-event process that lacks real-time visibility and often relies on "best guesses" for brand value.
+
+Our solution detects the presence of sponsorship elements within a broadcast, determines their “prominence,” and calculates the media value delivered by benchmarking its impact against the traditional :30 spot.
 
 **Our solution automates this entire lifecycle:**
 * **Instant ROI:** Attaches actual dollar values to brand appearances based on duration and prominence.
+* **Customizable:** Allows marketers and sponsorship salespeople to adjust the tool to account for audience size, CPM, and level of impact.
 * **Audit-Ready:** Provides deep links that jump a video player to the exact second a brand appears for 100% verification.
 * **Scalable:** Handles high-density environments (NASCAR, FIFA, NBA) where dozens of brands appear simultaneously.
 
