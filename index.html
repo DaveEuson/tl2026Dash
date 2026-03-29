@@ -15,13 +15,23 @@
       --color-accent: #7aa2f7; --color-green: #9ece6a; --color-red: #f7768e;
       --color-text: #c0caf5; --color-text-bright: #ffffff;
     }
-    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; }
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: system-ui, sans-serif; overflow-x: hidden; }
     .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-    .glass-card { background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .glass-card { background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
     .stat-value { font-size: 32px; font-weight: 800; color: var(--color-text-bright); }
-    .charts-area { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; min-height: 350px; margin-bottom: 30px;}
+    
+    /* 🎯 CRITICAL FIX: Fixed height for the chart area */
+    .charts-area { 
+      display: grid; 
+      grid-template-columns: 1.5fr 1fr; 
+      gap: 20px; 
+      margin-bottom: 30px;
+    }
+    .chart-box { height: 400px; display: flex; flex-direction: column; }
+    .chart-container { flex-grow: 1; position: relative; width: 100%; }
+
     .job-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    .job-table th, .job-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--color-border); }
+    .job-table th, .job-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--color-border); }
     .demo-banner { background: var(--color-accent); color: var(--color-bg); padding: 10px; text-align: center; font-weight: bold; }
     .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
   </style>
@@ -33,7 +43,7 @@
     <h1>🌙 BRAND EXPOSURE TRACKER</h1>
     
     <div class="glass-card">
-        <div style="display:flex; justify-content: space-around; text-align:center;">
+        <div style="display:flex; justify-content: space-around; text-align:center; flex-wrap: wrap; gap: 20px;">
             <div><div>Total Media Value</div><div class="stat-value" style="color:var(--color-green)">$842,500</div></div>
             <div><div>Core Brands</div><div class="stat-value">12</div></div>
             <div><div>Total Screen Time</div><div class="stat-value">14m 22s</div></div>
@@ -42,46 +52,54 @@
     </div>
 
     <div class="charts-area">
-        <div class="glass-card" style="display:flex; flex-direction:column;">
-            <h3 style="margin-top:0">Value by Core Brand</h3>
-            <canvas id="barChart"></canvas>
+        <div class="glass-card chart-box">
+            <h3 style="margin: 0 0 15px 0">Value by Core Brand</h3>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
         </div>
-        <div class="glass-card" style="display:flex; flex-direction:column;">
-            <h3 style="margin-top:0">Exposure Prominence</h3>
-            <canvas id="pieChart"></canvas>
+        <div class="glass-card chart-box">
+            <h3 style="margin: 0 0 15px 0">Exposure Prominence</h3>
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+            </div>
         </div>
     </div>
 
     <div class="glass-card">
         <h3>Analysis Log (Last 7 Jobs)</h3>
-        <table class="job-table">
-            <thead>
-                <tr>
-                    <th>Clip Name</th>
-                    <th>Top Brand Detected</th>
-                    <th>Prominence</th>
-                    <th>Duration</th>
-                    <th>Est. Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>NASCAR Richmond Highlights</td><td>Toyota</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 12s</td><td>$72,000</td></tr>
-                <tr><td>Premier League Goal Comp</td><td>Hublot</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>45s</td><td>$45,000</td></tr>
-                <tr><td>NBA Three-Pointer Highlights</td><td>GEICO</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 06s</td><td>$66,000</td></tr>
-                <tr><td>F1 Pit Stop Analysis</td><td>Oracle</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>52s</td><td>$52,000</td></tr>
-                <tr><td>Street League Skate Final</td><td>Monster Energy</td><td><span class="badge" style="background:#e0af6822; color:#e0af68">Moderate</span></td><td>1m 30s</td><td>$45,000</td></tr>
-                <tr><td>Champions League Intro</td><td>Adidas</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>38s</td><td>$38,000</td></tr>
-                <tr><td>Wimbledon Final Set</td><td>Rolex</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>2m 15s</td><td>$135,000</td></tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto;">
+            <table class="job-table">
+                <thead>
+                    <tr>
+                        <th>Clip Name</th>
+                        <th>Top Brand Detected</th>
+                        <th>Prominence</th>
+                        <th>Duration</th>
+                        <th>Est. Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>NASCAR Richmond Highlights</td><td>Toyota</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 12s</td><td>$72,000</td></tr>
+                    <tr><td>Premier League Goal Comp</td><td>Hublot</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>45s</td><td>$45,000</td></tr>
+                    <tr><td>NBA Three-Pointer Highlights</td><td>GEICO</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>1m 06s</td><td>$66,000</td></tr>
+                    <tr><td>F1 Pit Stop Analysis</td><td>Oracle</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>52s</td><td>$52,000</td></tr>
+                    <tr><td>Street League Skate Final</td><td>Monster Energy</td><td><span class="badge" style="background:#e0af6822; color:#e0af68">Moderate</span></td><td>1m 30s</td><td>$45,000</td></tr>
+                    <tr><td>Champions League Intro</td><td>Adidas</td><td><span class="badge" style="background:#f7768e22; color:#f7768e">Dominant</span></td><td>38s</td><td>$38,000</td></tr>
+                    <tr><td>Wimbledon Final Set</td><td>Rolex</td><td><span class="badge" style="background:#ff9e6422; color:#ff9e64">Prominent</span></td><td>2m 15s</td><td>$135,000</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
   </div>
 
   <script>
     Chart.register(ChartDataLabels);
 
+    // BAR CHART: Top Brands by Value
     new Chart(document.getElementById('barChart'), {
-        type: 'bar', indexAxis: 'y',
+        type: 'bar', 
+        indexAxis: 'y', // 🎯 Ensures the bars are horizontal
         data: { 
             labels: ['Rolex', 'Toyota', 'GEICO', 'Oracle', 'Hublot', 'Monster', 'Adidas'], 
             datasets: [{ 
@@ -91,18 +109,31 @@
             }]
         },
         options: { 
-            maintainAspectRatio: false,
+            maintainAspectRatio: false, // 🎯 Critical for following container height
+            responsive: true,
             plugins: { 
-                datalabels: { anchor:'end', align:'right', color: '#9ece6a', formatter: (v) => '$'+v.toLocaleString() }, 
-                legend: {display:false} 
+                datalabels: { 
+                    anchor: 'end', 
+                    align: 'right', 
+                    color: '#9ece6a', 
+                    font: { weight: 'bold' },
+                    formatter: (v) => '$' + v.toLocaleString() 
+                }, 
+                legend: { display: false } 
             },
+            layout: { padding: { right: 60 } },
             scales: {
                 x: { display: false },
-                y: { ticks: { color: '#ffffff', font: { weight: 'bold' } }, grid: { display: false } }
+                y: { 
+                    ticks: { color: '#ffffff', font: { weight: 'bold' } }, 
+                    grid: { display: false },
+                    border: { display: false }
+                }
             }
         }
     });
 
+    // PIE CHART: Prominence Mix
     new Chart(document.getElementById('pieChart'), {
         type: 'doughnut',
         data: { 
@@ -117,7 +148,11 @@
             maintainAspectRatio: false,
             cutout: '70%',
             plugins: { 
-                legend: { position: 'bottom', labels: { color: '#c0caf5', usePointStyle: true, font: {size: 11} }} 
+                datalabels: { display: false },
+                legend: { 
+                    position: 'bottom', 
+                    labels: { color: '#c0caf5', usePointStyle: true, font: { size: 11 } }
+                } 
             }
         }
     });
