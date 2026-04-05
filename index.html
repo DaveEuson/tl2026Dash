@@ -130,6 +130,14 @@
     .btn-del:hover { color:var(--red);background:rgba(247,118,142,.12); }
     input[type="checkbox"].ec { transform:scale(1.2);cursor:pointer;accent-color:var(--grn); }
 
+    .ev-viewers { display:flex;flex-direction:column;align-items:flex-end;gap:3px; }
+    .ev-viewers-label { font-size:9px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.8px; }
+    .ev-viewers-row { display:flex;align-items:center;gap:6px; }
+    .ev-viewers-input { background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--brt);padding:4px 8px;border-radius:var(--rs);font-family:var(--font);font-size:12px;font-weight:700;outline:none;width:120px;text-align:right;transition:border-color .15s; }
+    .ev-viewers-input:focus { border-color:var(--acc); }
+    .ev-viewers-input.has-value { border-color:rgba(122,162,247,.4);color:var(--acc); }
+    .ev-viewers-mult { font-size:10px;font-weight:800;border-radius:4px;padding:2px 6px;white-space:nowrap; }
+
     /* toast */
     .toast { position:fixed;bottom:22px;right:22px;min-width:230px;padding:10px 15px;border-radius:var(--rs);background:var(--card);border:1px solid var(--acc);color:var(--acc);font-weight:700;transform:translateY(70px);opacity:0;transition:all .25s;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.4);font-size:13px; }
     .toast.show { transform:translateY(0);opacity:1; }
@@ -190,6 +198,16 @@
       <div class="s-hd">
         <h2>⚙️ Dashboard Settings</h2>
         <button style="background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;" onclick="closeSettings()">✕</button>
+      </div>
+
+      <div class="s-sec">
+        <h3>👥 Viewership Sample Size</h3>
+        <p>Set a global default viewership as your baseline (×1.0). Entries with more or fewer viewers scale the value proportionally. Leave at 0 to disable.</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <input id="defViewers" type="number" class="si" min="0" step="10000" placeholder="e.g. 500000" style="flex:1;">
+          <span id="defViewersHint" style="font-size:11px;color:var(--mut);white-space:nowrap;"></span>
+        </div>
+        <p style="margin:0;font-size:10px;color:var(--mut);">Example: 500K default. 1M viewers entry = ×2.0. 100K entry = ×0.2. Override per-entry by clicking the 👥 column in the log.</p>
       </div>
 
       <div class="s-sec">
@@ -275,6 +293,7 @@
         <div class="gc sc"><div class="sl">Core Brands</div>      <div id="sBrands" class="sv">0</div></div>
         <div class="gc sc"><div class="sl">Screen Time</div>      <div id="sTime"   class="sv">0s</div></div>
         <div class="gc sc"><div class="sl">Events Analyzed</div>  <div id="sJobs"   class="sv">0</div></div>
+        <div class="gc sc" id="sViewCard" style="display:none;"><div class="sl">Avg Viewership</div><div id="sViewers" class="sv" style="color:var(--acc)">—</div></div>
       </div>
 
       <div class="charts-area">
@@ -369,18 +388,20 @@
     /* ════ STATE ════ */
     let rawData=[...SEED.map(r=>({...r}))];
     let excludedUids=new Set(), deletedUids=new Set(), rowEdits={};
+    let eventViewers={};
     let selBrand=null, ddBrand=null, grouping='event', expandedBrands=new Set();
     let sortCol='value', sortDesc=true;
     let autoOn=false, autoTimer=null, simCount=0;
     let tempOvList=[];
 
-    const SK='demo_v4', DK='demo_del', EK='demo_edits';
-    const DEF={rates:{DOMINANT:0,PROMINENT:0,MODERATE:0,SUBTLE:0},brandOverrides:{},logoDomains:"Nike → nike.com\nRed Bull → redbull.com\nAdidas → adidas.com\nMonster Energy → monsterenergy.com\nToyota → toyota.com\nGatorade → gatorade.com\nRolex → rolex.com\nGeico → geico.com\nVerizon → verizon.com\nHeineken → heineken.com",timezone:"America/Los_Angeles",theme:"tokyo-night"};
+    const SK='demo_v4', DK='demo_del', EK='demo_edits', VK='demo_evv';
+    const DEF={rates:{DOMINANT:0,PROMINENT:0,MODERATE:0,SUBTLE:0},brandOverrides:{},logoDomains:"Nike → nike.com\nRed Bull → redbull.com\nAdidas → adidas.com\nMonster Energy → monsterenergy.com\nToyota → toyota.com\nGatorade → gatorade.com\nRolex → rolex.com\nGeico → geico.com\nVerizon → verizon.com\nHeineken → heineken.com",timezone:"America/Los_Angeles",theme:"tokyo-night",defaultViewers:0};
     let S={...DEF};
 
-    function loadState(){ try{const s=localStorage.getItem(SK);if(s)S={...DEF,...JSON.parse(s)};}catch(e){} try{const d=localStorage.getItem(DK);if(d)deletedUids=new Set(JSON.parse(d));}catch(e){} try{const e=localStorage.getItem(EK);if(e)rowEdits=JSON.parse(e);}catch(e){} applyTheme(S.theme); }
+    function loadState(){ try{const s=localStorage.getItem(SK);if(s)S={...DEF,...JSON.parse(s)};}catch(e){} try{const d=localStorage.getItem(DK);if(d)deletedUids=new Set(JSON.parse(d));}catch(e){} try{const e=localStorage.getItem(EK);if(e)rowEdits=JSON.parse(e);}catch(e){} try{const v=localStorage.getItem(VK);if(v)eventViewers=JSON.parse(v);}catch(e){} applyTheme(S.theme); }
     function persistDel(){ localStorage.setItem(DK,JSON.stringify([...deletedUids])); }
     function persistEdits(){ localStorage.setItem(EK,JSON.stringify(rowEdits)); }
+    function persistEvV(){ localStorage.setItem(VK,JSON.stringify(eventViewers)); }
 
     /* ════ THEME ════ */
     function applyTheme(t){ document.body.setAttribute('data-theme',t); document.querySelectorAll('.to').forEach(el=>el.classList.toggle('sel',el.dataset.t===t)); }
@@ -414,17 +435,26 @@
 
     /* ════ VALUE CALC ════ */
     function uid(r){ return r.asset_id+'_'+r.rawStartTc+'_'+r.brand; }
+    function viewerMult(id, clipName){
+      const defV=Number(S.defaultViewers)||0;
+      if(!defV)return 1;
+      const rowV=rowEdits[id]?.viewers;
+      const evV=clipName?eventViewers[clipName]:undefined;
+      const effective=rowV!==undefined?Number(rowV):evV!==undefined?Number(evV):defV;
+      return effective/defV;
+    }
     function calcVal(r){
       const id=uid(r), edit=rowEdits[id]||{};
       if(edit.manualVal!==undefined)return edit.manualVal;
       const prom=edit.prom||r.prominence;
       const dur=r.cleanDur;
       const brand=edit.coreBrand||r.coreBrand;
+      let base;
       const ov=S.brandOverrides?.[brand];
-      if(ov?.byProminence){ const rate=Number(ov.byProminence[prom]||0); if(rate>0)return Math.round(rate*dur); }
-      const hasG=Object.values(S.rates).some(v=>Number(v)>0);
-      if(hasG&&Number(S.rates[prom])>0)return Math.round(Number(S.rates[prom])*dur);
-      return r.serverVal;
+      if(ov?.byProminence){ const rate=Number(ov.byProminence[prom]||0); if(rate>0)base=Math.round(rate*dur); }
+      if(base===undefined){ const hasG=Object.values(S.rates).some(v=>Number(v)>0); if(hasG&&Number(S.rates[prom])>0)base=Math.round(Number(S.rates[prom])*dur); }
+      if(base===undefined)base=r.serverVal;
+      return Math.round(base*viewerMult(id, r.clip_name));
     }
 
     /* ════ LOGOS ════ */
@@ -442,6 +472,7 @@
     const PROMS=['DOMINANT','PROMINENT','MODERATE','SUBTLE'];
     const $M=n=>'$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0});
     const $D=s=>{ const v=Number(s)||0; return v<60?v+'s':Math.floor(v/60)+'m'+(v%60?' '+v%60+'s':''); };
+    const fmtV=n=>{ const v=Number(n)||0; if(v>=1e9)return(v/1e9).toFixed(1)+'B'; if(v>=1e6)return(v/1e6).toFixed(1)+'M'; if(v>=1e3)return(v/1e3).toFixed(0)+'K'; return String(v); };
     const tr=(s,n=26)=>s&&s.length>n?s.slice(0,n-1)+'…':(s||'');
     const nowTz=()=>new Date().toLocaleTimeString('en-US',{timeZone:S.timezone,hour:'numeric',minute:'2-digit',second:'2-digit'});
     const toast=msg=>{ const t=document.getElementById('toast'); t.textContent=msg; t.className='toast show'; setTimeout(()=>t.classList.remove('show'),3500); };
@@ -498,9 +529,9 @@
     function nukeData(){
       if(!confirm('Reset to default demo data?'))return;
       rawData=[...SEED.map(r=>({...r}))];
-      excludedUids.clear(); deletedUids.clear(); rowEdits={};
+      excludedUids.clear(); deletedUids.clear(); rowEdits={}; eventViewers={};
       selBrand=ddBrand=null; expandedBrands.clear(); simCount=0;
-      localStorage.removeItem(DK); localStorage.removeItem(EK);
+      localStorage.removeItem(DK); localStorage.removeItem(EK); localStorage.removeItem(VK);
       document.getElementById('btnCF').style.display='none';
       document.getElementById('ddCard').classList.remove('open');
       document.getElementById('ajWrap').innerHTML='';
@@ -509,11 +540,16 @@
 
     /* ════ PROCESS ROWS ════ */
     function processRows(){
+      const defV=Number(S.defaultViewers)||0;
       return rawData.map(r=>{
         const id=uid(r), edit=rowEdits[id]||{};
         const prom=edit.prom||r.prominence;
         const cb=edit.coreBrand||r.coreBrand;
-        const row={...r,uid:id,prom,coreBrand:cb,serverVal:r.cleanVal,cleanVal:0,isIncluded:!excludedUids.has(id),isDeleted:deletedUids.has(id),hasEdit:!!Object.keys(edit).length};
+        const rowV=edit.viewers;
+        const evV=r.clip_name?eventViewers[r.clip_name]:undefined;
+        const entryViewers=rowV!==undefined?Number(rowV):evV!==undefined?Number(evV):defV;
+        const mult=defV>0?entryViewers/defV:1;
+        const row={...r,uid:id,prom,coreBrand:cb,serverVal:r.cleanVal,cleanVal:0,entryViewers,mult,isIncluded:!excludedUids.has(id),isDeleted:deletedUids.has(id),hasEdit:!!Object.keys(edit).length};
         row.cleanVal=calcVal(row);
         return row;
       }).filter(r=>!r.isDeleted);
@@ -541,6 +577,14 @@
       document.getElementById('sBrands').textContent=Object.keys(bMap).length;
       document.getElementById('sTime').textContent=$D(tD);
       document.getElementById('sJobs').textContent=clips.size;
+
+      const defV=Number(S.defaultViewers)||0;
+      const vCard=document.getElementById('sViewCard');
+      if(defV>0){
+        vCard.style.display='';
+        const avgV=active.length?Math.round(active.reduce((s,r)=>s+r.entryViewers,0)/active.length):defV;
+        document.getElementById('sViewers').textContent=fmtV(avgV);
+      } else { vCard.style.display='none'; }
 
       const allBrands=[...new Set(rows.map(r=>r.coreBrand))].sort();
       document.getElementById('brandsList').innerHTML=allBrands.map(b=>`<option value="${b}">`).join('');
@@ -595,6 +639,7 @@
       let el;
       if(field==='prom'){ el=document.createElement('select'); el.className='inline-sel'; PROMS.forEach(p=>{const o=document.createElement('option');o.value=p;o.textContent=EMJ[p]+' '+p;if(p===(edit.prom||td.dataset.val))o.selected=true;el.appendChild(o);}); }
       else if(field==='val'){ el=document.createElement('input');el.type='number';el.min=0;el.className='inline-input';el.value=td.dataset.val;el.style.width='90px'; }
+      else if(field==='viewers'){ el=document.createElement('input');el.type='number';el.min=0;el.step=10000;el.className='inline-input';el.value=td.dataset.val;el.style.width='100px';el.placeholder='# viewers'; }
       else{ el=document.createElement('input');el.type='text';el.className='inline-input';el.setAttribute('list','brandsList');el.value=td.dataset.val;el.style.width='130px'; }
       td.innerHTML='';td.appendChild(el);el.focus();if(el.select&&field!=='prom')el.select();
       const save=()=>{
@@ -602,6 +647,7 @@
         if(!rowEdits[id])rowEdits[id]={};
         if(field==='prom'&&val)rowEdits[id].prom=val;
         else if(field==='val')rowEdits[id].manualVal=val===''?undefined:Number(val);
+        else if(field==='viewers')rowEdits[id].viewers=val===''?undefined:Number(val);
         else if(field==='brand'&&val)rowEdits[id].coreBrand=val;
         if(!Object.values(rowEdits[id]).some(v=>v!==undefined))delete rowEdits[id];
         persistEdits();renderDashboard();
@@ -626,7 +672,15 @@
         const dot=r.hasEdit?`<span class="edot" title="Edited"></span>`:'';
         const undo=r.hasEdit?`<button class="btn-undo" onclick="undoEdit('${eu}')" title="Revert">↺</button>`:'';
         const pCell=`<td class="editable" data-uid="${eu}" data-field="prom" data-val="${r.prom}" onclick="startEdit(this,'${eu}','prom')" title="Click to edit"><span class="pbadge" style="background:${C[r.prom]||'#333'}22;color:${C[r.prom]||C.txt}">${EMJ[r.prom]||''} ${r.prom}</span><span class="eh">✏️</span></td>`;
-        const vCell=`<td class="editable" data-uid="${eu}" data-field="val"  data-val="${r.cleanVal}" onclick="startEdit(this,'${eu}','val')"  title="Click to edit" style="color:var(--grn);font-weight:700;">${$M(r.cleanVal)}<span class="eh">✏️</span></td>`;
+
+        const defV=Number(S.defaultViewers)||0;
+        const multBadge=defV>0&&!((rowEdits[r.uid]||{}).manualVal!==undefined)
+          ?`<span style="font-size:9px;font-weight:800;color:${r.mult>1?'var(--grn)':r.mult<1?'var(--red)':'var(--mut)'};background:rgba(0,0,0,.25);border-radius:4px;padding:1px 5px;margin-left:4px;">×${r.mult.toFixed(2)}</span>`:'';
+        const vCell=`<td class="editable" data-uid="${eu}" data-field="val" data-val="${r.cleanVal}" onclick="startEdit(this,'${eu}','val')" title="Click to edit value" style="color:var(--grn);font-weight:700;white-space:nowrap;">${$M(r.cleanVal)}${multBadge}<span class="eh">✏️</span></td>`;
+        const viewersCell=defV>0
+          ?`<td class="editable" data-uid="${eu}" data-field="viewers" data-val="${r.entryViewers||defV}" onclick="startEdit(this,'${eu}','viewers')" title="Set viewership" style="font-size:11px;color:var(--acc);white-space:nowrap;">👥 ${fmtV(r.entryViewers||defV)}${r.entryViewers&&r.entryViewers!==defV?'<span style="color:var(--org);margin-left:2px;font-size:9px;">✎</span>':''}<span class="eh">✏️</span></td>`
+          :'';
+
         const bCell=`<td class="editable" data-uid="${eu}" data-field="brand" data-val="${esc(r.coreBrand)}" onclick="startEdit(this,'${eu}','brand')" title="Click to edit"><div class="bcell">${logoEl(r.coreBrand)}<span style="color:var(--acc);font-weight:700;">${r.coreBrand}</span>${dot}<span class="eh">✏️</span></div></td>`;
         const firstCol=grouping==='event'?bCell:`<td style="color:var(--acc);font-weight:700;font-size:12px;">${tr(r.clip_name||'—',34)}</td>`;
         const lnk=`https://app.iconik.io/asset/${r.asset_id}/?time=${r.cleanStart}`;
@@ -635,7 +689,7 @@
           <td>${undo}<input type="checkbox" class="ec" ${r.isIncluded?'checked':''} onchange="toggleRow('${eu}')"></td>
           ${firstCol}<td style="font-size:11px;color:var(--mut);">${tr(r.brand||'—',36)}</td>
           ${pCell}<td style="font-family:monospace;font-size:11px;">${r.rawStartTc}</td>
-          <td style="font-size:11px;">${$D(r.cleanDur)}</td>${vCell}
+          <td style="font-size:11px;">${$D(r.cleanDur)}</td>${viewersCell}${vCell}
           <td><a href="${lnk}" target="_blank" style="color:var(--acc2);text-decoration:none;font-weight:700;font-size:11px;" title="Open in Iconik (demo link)">↗</a></td>
           <td><button class="btn-del" onclick="delRow('${eu}')">🗑</button></td>
         </tr>`;
@@ -666,7 +720,28 @@
           });
         } else { sorted.forEach(r=>{rowsHtml+=buildRow(r);}); }
 
-        html+=`<div class="gc jcard"><div class="jhead"><div class="jhead-l"><div style="background:rgba(187,154,247,.12);color:var(--acc2);padding:8px;border-radius:8px;font-size:16px;flex-shrink:0;">${icon}</div><div class="bcell">${gLogo}<h3 style="margin:0;color:var(--brt);font-size:13px;font-weight:800;">${tr(gName,52)}</h3></div></div><div class="jhead-r"><div style="font-size:19px;font-weight:800;color:var(--grn);">${$M(g.total)}</div><button class="btn b-red b-sm" onclick="delGroup('${esc(gName)}','${grouping}')">🗑 Delete</button></div></div><div style="overflow-x:auto;"><table class="jtable"><thead><tr><th>Incl.</th>${fColH}<th>Context</th><th onclick="setSort('prom')">Prom. ${arr('prom')}</th><th onclick="setSort('start')">Start ${arr('start')}</th><th onclick="setSort('dur')">Dur. ${arr('dur')}</th><th onclick="setSort('value')">Value ${arr('value')}</th><th>↗</th><th></th></tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
+        const defV=Number(S.defaultViewers)||0;
+        const evV=isEv?(eventViewers[gName]||0):0;
+        const multBadge=evV&&defV>0
+          ? `<span class="ev-viewers-mult" style="background:${evV/defV>1?'rgba(158,206,106,.15)':evV/defV<1?'rgba(247,118,142,.15)':'rgba(0,0,0,.2)'};color:${evV/defV>1?'var(--grn)':evV/defV<1?'var(--red)':'var(--mut)'}">×${(evV/defV).toFixed(2)}</span>`
+          : '';
+        const viewerBlock=isEv?`
+          <div class="ev-viewers">
+            <div class="ev-viewers-label">👥 Viewership</div>
+            <div class="ev-viewers-row">
+              <input
+                class="ev-viewers-input${evV?' has-value':''}"
+                type="number" min="0" step="10000"
+                placeholder="${defV?fmtV(defV)+' (default)':'e.g. 500000'}"
+                value="${evV||''}"
+                onchange="setEventViewers('${esc(gName)}',this.value)"
+                onclick="event.stopPropagation()"
+                title="${defV?'Blank = use global default ('+fmtV(defV)+')':'Set viewer count for this event'}"
+              >${multBadge}
+            </div>
+          </div>`:'';
+
+        html+=`<div class="gc jcard"><div class="jhead"><div class="jhead-l"><div style="background:rgba(187,154,247,.12);color:var(--acc2);padding:8px;border-radius:8px;font-size:16px;flex-shrink:0;">${icon}</div><div class="bcell">${gLogo}<h3 style="margin:0;color:var(--brt);font-size:13px;font-weight:800;">${tr(gName,52)}</h3></div></div><div class="jhead-r">${viewerBlock}<div style="text-align:right;"><div style="font-size:19px;font-weight:800;color:var(--grn);">${$M(g.total)}</div></div><button class="btn b-red b-sm" onclick="delGroup('${esc(gName)}','${grouping}')">🗑 Delete</button></div></div><div style="overflow-x:auto;"><table class="jtable"><thead><tr><th>Incl.</th>${fColH}<th>Context</th><th onclick="setSort('prom')">Prom. ${arr('prom')}</th><th onclick="setSort('start')">Start ${arr('start')}</th><th onclick="setSort('dur')">Dur. ${arr('dur')}</th>${defV>0?`<th onclick="setSort('viewers')">👥 Viewers ${arr('viewers')}</th>`:''}<th onclick="setSort('value')">Value ${arr('value')}</th><th>↗</th><th></th></tr></thead><tbody>${rowsHtml}</tbody></table></div></div>`;
       }
       c.innerHTML=html;
     }
@@ -675,6 +750,7 @@
     window.setSort=col=>{sortCol===col?sortDesc=!sortDesc:(sortCol=col,sortDesc=true);renderDashboard();};
     window.setGroup=type=>{grouping=type;document.getElementById('togEv').className=`tog${type==='event'?' on':''}`;document.getElementById('togBr').className=`tog${type==='brand'?' on':''}`;renderDashboard();};
     window.toggleBG=key=>{expandedBrands.has(key)?expandedBrands.delete(key):expandedBrands.add(key);renderDashboard();};
+    window.setEventViewers=function(clipName,val){ const n=Number(val)||0; if(n>0)eventViewers[clipName]=n; else delete eventViewers[clipName]; persistEvV(); renderDashboard(); };
     window.delRow=id=>{if(!confirm('Remove this entry?'))return;deletedUids.add(id);persistDel();renderDashboard();toast('🗑️ Entry removed');};
     window.delGroup=(gName,gType)=>{if(!confirm(`Delete all entries for:\n"${tr(gName,45)}"?`))return;processRows().forEach(r=>{const k=gType==='event'?r.clip_name:r.coreBrand;if(k===gName)deletedUids.add(r.uid);});persistDel();expandedBrands.clear();renderDashboard();toast('🗑️ Group deleted');};
 
@@ -684,6 +760,10 @@
       ['DOMINANT','PROMINENT','MODERATE','SUBTLE'].forEach(k=>{document.getElementById('r-'+k).value=S.rates[k]||'';});
       document.getElementById('tzSel').value=S.timezone||'America/Los_Angeles';
       document.getElementById('logoDomains').value=S.logoDomains||'';
+      document.getElementById('defViewers').value=S.defaultViewers||'';
+      const h=document.getElementById('defViewersHint');
+      h.textContent=S.defaultViewers>0?'= baseline (×1.0)':'Disabled';
+      document.getElementById('defViewers').oninput=function(){ h.textContent=this.value?'= baseline (×1.0)':'Disabled'; };
       applyTheme(S.theme);
       tempOvList=Object.entries(S.brandOverrides||{}).map(([brand,ov])=>({brand,rates:{DOMINANT:ov.byProminence?.DOMINANT||0,PROMINENT:ov.byProminence?.PROMINENT||0,MODERATE:ov.byProminence?.MODERATE||0,SUBTLE:ov.byProminence?.SUBTLE||0}}));
       const brands=[...new Set(processRows().map(r=>r.coreBrand))].sort();
@@ -715,7 +795,7 @@
     window.saveSettings=()=>{
       const brandOverrides={};
       tempOvList.forEach(ov=>{if(ov.brand.trim())brandOverrides[ov.brand.trim()]={byProminence:ov.rates};});
-      S={rates:{DOMINANT:Number(document.getElementById('r-DOMINANT').value)||0,PROMINENT:Number(document.getElementById('r-PROMINENT').value)||0,MODERATE:Number(document.getElementById('r-MODERATE').value)||0,SUBTLE:Number(document.getElementById('r-SUBTLE').value)||0},brandOverrides,logoDomains:document.getElementById('logoDomains').value,timezone:document.getElementById('tzSel').value,theme:S.theme};
+      S={rates:{DOMINANT:Number(document.getElementById('r-DOMINANT').value)||0,PROMINENT:Number(document.getElementById('r-PROMINENT').value)||0,MODERATE:Number(document.getElementById('r-MODERATE').value)||0,SUBTLE:Number(document.getElementById('r-SUBTLE').value)||0},brandOverrides,logoDomains:document.getElementById('logoDomains').value,timezone:document.getElementById('tzSel').value,theme:S.theme,defaultViewers:Number(document.getElementById('defViewers').value)||0};
       localStorage.setItem(SK,JSON.stringify(S));
       applyTheme(S.theme);closeSettings();renderDashboard();toast('⚙️ Settings saved!');
     };
@@ -724,8 +804,9 @@
     /* ════ CSV ════ */
     function exportCsv(){
       const rows=processRows().filter(r=>r.isIncluded);
-      const h=['Event','Event Type','Brand (Core)','Brand (Context)','Prominence','Start TC','Duration (s)','Value ($)','Manually Edited'];
-      const body=rows.map(r=>[`"${(r.clip_name||'').replace(/"/g,'""')}"`,detectType(r.clip_name),`"${(r.coreBrand||'').replace(/"/g,'""')}"`,`"${(r.brand||'').replace(/"/g,'""')}"`,r.prom,r.rawStartTc,r.cleanDur,r.cleanVal,r.hasEdit?'Yes':'No'].join(','));
+      const defV=Number(S.defaultViewers)||0;
+      const h=['Event','Event Type','Brand (Core)','Brand (Context)','Prominence','Start TC','Duration (s)','Viewers','Viewer Multiplier','Value ($)','Manually Edited'];
+      const body=rows.map(r=>[`"${(r.clip_name||'').replace(/"/g,'""')}"`,detectType(r.clip_name),`"${(r.coreBrand||'').replace(/"/g,'""')}"`,`"${(r.brand||'').replace(/"/g,'""')}"`,r.prom,r.rawStartTc,r.cleanDur,defV>0?(r.entryViewers||defV):'N/A',defV>0?r.mult.toFixed(3):'N/A',r.cleanVal,r.hasEdit?'Yes':'No'].join(','));
       const blob=new Blob([[h.join(','),...body].join('\n')],{type:'text/csv'});
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Brand_Exposure_Demo.csv';a.click();
       toast('📊 CSV downloaded!');
