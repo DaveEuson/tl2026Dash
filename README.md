@@ -128,7 +128,7 @@ Both sources feed the same universal dashboard. Mimir and Iconik assets appear s
 
 ## 🔗 Live Demo
 
-**[View the Interactive Brand Exposure Dashboard →](https://flow-gx4r6vg7wip41.demo-01.qibb.com/dashboard)**
+**[View the Interactive Brand Exposure Dashboard →](https://daveeuson.github.io/tl2026Dash/)**
 
 ---
 
